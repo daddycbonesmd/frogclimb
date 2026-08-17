@@ -43,6 +43,12 @@
       <button id="copyBtn" class="small">COPY</button>
     </div>
     <p class="hint">Friends join at this address with the code. Up to 6 frogs.</p>
+    <div class="diffRow">
+      <span class="diffLabel">DIFFICULTY</span>
+      <button class="diffBtn" data-diff="easy">EASY</button>
+      <button class="diffBtn" data-diff="medium">MEDIUM</button>
+      <button class="diffBtn" data-diff="hard">HARD</button>
+    </div>
     <div id="lobbyPlayers" class="lobbyPlayers"></div>
     <button id="startBtn" class="big green hidden">START CLIMB</button>
     <div id="lobbyHint" class="hint"></div>
@@ -55,7 +61,7 @@
   <div class="gameWrap">
     <div class="towerCol">
       <div class="towerPane">
-        <canvas id="gameCanvas" width="200" height="280"></canvas>
+        <canvas id="gameCanvas" width="240" height="180"></canvas>
         <div id="getready" class="getready hidden">GET&nbsp;READY!</div>
       </div>
       <div id="qCard" class="qCard faded">
@@ -77,6 +83,8 @@
         <button id="muteBtn" class="small ghost">SND ON</button>
       </div>
       <div id="standings" class="standings"></div>
+      <div id="raceTrack" class="raceTrack"></div>
+      <div class="controlsHint">WASD / ARROWS HOP &nbsp;·&nbsp; 1-4 ANSWER &nbsp;·&nbsp; REACH THE DOOR TO CLIMB</div>
       <div id="feed" class="feed"></div>
     </div>
   </div>

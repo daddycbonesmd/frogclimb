@@ -9,6 +9,7 @@ const QUESTIONS = require('../questions.js');
 const PORT = 8799;
 const URL = `ws://localhost:${PORT}`;
 const byText = new Map(QUESTIONS.map(q => [q.text, q.correct]));
+const diffByText = new Map(QUESTIONS.map(q => [q.text, q.d]));
 
 let failures = 0;
 function assert(cond, label) {
@@ -20,7 +21,7 @@ function makeBot(name, strategy) {
   const bot = {
     name, ws: null, id: null, token: null, code: null,
     floor: 0, phase: 'lobby', winners: null, reveals: [], questions: 0,
-    lastRoster: null, matchStarts: 0,
+    lastRoster: null, matchStarts: 0, texts: [],
   };
   bot.connect = () => new Promise(res => {
     bot.ws = new WebSocket(URL);
@@ -41,6 +42,7 @@ function makeBot(name, strategy) {
         case 'matchStart': bot.matchStarts++; break;
         case 'question': {
           bot.questions++;
+          bot.texts.push(m.text);
           const correct = byText.get(m.text);
           const correctIdx = m.options.indexOf(correct);
           const delay = 30 + Math.random() * 80;
@@ -105,6 +107,12 @@ function waitFor(fn, ms, label) {
     await new Promise(r => setTimeout(r, 300));
     assert(smart.matchStarts === 0, 'non-host start ignored');
 
+    // difficulty: non-host ignored, host applies
+    randy.send({ t: 'difficulty', v: 'hard' });
+    smart.send({ t: 'difficulty', v: 'easy' });
+    await waitFor(() => smart.lastRoster && smart.lastRoster.difficulty === 'easy', 2000, 'difficulty set');
+    assert(smart.lastRoster.difficulty === 'easy', 'host set difficulty to easy');
+
     smart.send({ t: 'start' });
     await waitFor(() => smart.winners, 60000, 'match completes');
 
@@ -128,6 +136,11 @@ function waitFor(fn, ms, label) {
     const floorsOk = smart.reveals.every(r => r.results.every(x => x.to >= 0 && x.to <= 15));
     assert(floorsOk, 'floors always within 0..15');
 
+    // all served questions matched the chosen difficulty
+    assert(smart.texts.every(t2 => diffByText.get(t2) === 1), 'easy mode served only easy questions');
+    // no question repeated within the match
+    assert(new Set(smart.texts).size === smart.texts.length, 'no repeats within a match');
+
     // rematch resets
     const prevQ = smart.questions;
     smart.send({ t: 'start' });
@@ -135,6 +148,10 @@ function waitFor(fn, ms, label) {
     const rosterAfter = smart.lastRoster.players.every(p => p.floor <= 2);
     assert(smart.matchStarts === 2, 'matchStart broadcast on rematch');
     assert(rosterAfter, 'floors reset for rematch');
+
+    // wait a couple more rematch questions, then check cross-match no-repeat
+    await waitFor(() => smart.questions >= prevQ + 2, 8000, 'rematch questions flowing');
+    assert(new Set(smart.texts).size === smart.texts.length, 'no repeats across rematches in the same room');
 
     // answer validation: bad indexes ignored (no crash)
     smart.send({ t: 'answer', idx: 99 });

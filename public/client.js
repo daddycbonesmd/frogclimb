@@ -64,8 +64,11 @@
       land: () => tone(90, 0.09, 'square', 0.1),
       win: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, 'square', 0.08, null, i * 0.12)); },
       lose: () => { [330, 262, 196].forEach((f, i) => tone(f, 0.2, 'square', 0.07, null, i * 0.15)); },
+      ding: () => { tone(880, 0.12, 'sine', 0.07); tone(1320, 0.2, 'sine', 0.06, null, 0.12); },
+      stairs: () => { [140, 180, 140, 180].forEach((f, i) => tone(f, 0.07, 'square', 0.06, null, i * 0.13)); },
     };
   })();
+  window.SFX = SFX; // renderer triggers sounds too
 
   els.muteBtn.textContent = SFX.muted ? 'SND OFF' : 'SND ON';
   els.muteBtn.onclick = () => { els.muteBtn.textContent = SFX.toggle() ? 'SND OFF' : 'SND ON'; };
@@ -174,6 +177,13 @@
       }
     }
 
+    // difficulty picker state
+    const isHostNow = you && msg.hostId === you.id;
+    [...document.querySelectorAll('.diffBtn')].forEach(b => {
+      b.classList.toggle('active', b.dataset.diff === msg.difficulty);
+      b.disabled = !isHostNow;
+    });
+
     if (msg.phase === 'lobby') {
       show(els.lobby);
       els.lobbyCode.textContent = msg.code;
@@ -196,6 +206,7 @@
     current = msg;
     myPick = typeof msg.yourAnswer === 'number' ? msg.yourAnswer : null;
     clockOffset = msg.now - Date.now();
+    Renderer.newQuestion();
     Renderer.clearAnswered();
     els.overlay.classList.add('hidden');
     els.getready.classList.add('hidden');
@@ -335,6 +346,22 @@
     const specs = room.players.filter(p => p.spectator);
     els.standings.innerHTML = rows +
       (specs.length ? `<div class="specRow">WATCHING: ${specs.map(s => s.name).join(', ')}</div>` : '');
+    renderRaceTrack();
+  }
+
+  // vertical race ladder: everyone's height on the tower at a glance
+  function renderRaceTrack() {
+    const track = document.getElementById('raceTrack');
+    if (!track || !room) return;
+    const players = room.players.filter(p => !p.spectator);
+    const floors = room.floors || 15;
+    track.innerHTML = '<div class="trackRoof">ROOF</div>' +
+      players.map((p, i) => {
+        const col = FROG_COLORS[p.color % FROG_COLORS.length];
+        const pct = Math.min(100, (p.floor / floors) * 100);
+        return `<div class="trackDot" title="${p.name} F${p.floor}" style="background:${col.body};left:${8 + i * 14}px;bottom:calc(${pct}% - 4px)"></div>`;
+      }).join('') +
+      '<div class="trackGround"></div>';
   }
 
   // ---------------------------------------------------------------- UI events
@@ -374,10 +401,34 @@
 
   document.addEventListener('keydown', e => {
     if (els.game.classList.contains('hidden')) return;
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
     const k = e.key;
     let i = -1;
     if (k >= '1' && k <= '4') i = k.charCodeAt(0) - 49;
-    if (i >= 0) pick(i);
+    if (i >= 0) { pick(i); return; }
+    const dirs = {
+      ArrowLeft: 'left', a: 'left', A: 'left',
+      ArrowRight: 'right', d: 'right', D: 'right',
+      ArrowUp: 'up', w: 'up', W: 'up',
+      ArrowDown: 'down', s: 'down', S: 'down',
+    };
+    if (dirs[k]) { e.preventDefault(); Renderer.move(dirs[k]); }
+  });
+
+  // click / tap on the view hops toward the door or sideways
+  els.canvas.addEventListener('pointerdown', e => {
+    const r = els.canvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    if (y < 0.45) Renderer.move('up');
+    else if (x < 0.33) Renderer.move('left');
+    else if (x > 0.67) Renderer.move('right');
+    else Renderer.move('up');
+  });
+
+  // difficulty buttons (host only)
+  [...document.querySelectorAll('.diffBtn')].forEach(b => {
+    b.onclick = () => { SFX.click(); sendMsg({ t: 'difficulty', v: b.dataset.diff }); };
   });
 
   // ---------------------------------------------------------------- boot

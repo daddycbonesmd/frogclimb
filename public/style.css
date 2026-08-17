@@ -113,6 +113,14 @@ button.ghost { background: transparent; color: #a8d8a0; border-color: #a8d8a0; b
 .codeBig { font-size: 34px; color: var(--cream); letter-spacing: 8px; text-shadow: 3px 3px 0 var(--ink); }
 .hint { font-size: 8px; color: #a8d8a0; line-height: 1.8; margin: 10px 0; }
 .lobbyPlayers { margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+.diffRow { display: flex; align-items: center; gap: 8px; justify-content: center; margin: 12px 0 4px; }
+.diffLabel { font-size: 8px; color: #a8d8a0; margin-right: 4px; }
+.diffBtn {
+  font-size: 8px; padding: 7px 10px; background: var(--ink); color: #8aa88a;
+  border: 2px solid var(--panel-edge); box-shadow: none;
+}
+.diffBtn.active { background: var(--banana); color: var(--ink); border-color: var(--ink); }
+.diffBtn:disabled { cursor: default; opacity: .8; }
 .lobbyFrog { font-size: 10px; display: flex; align-items: center; gap: 10px; background: var(--panel-edge); padding: 8px 12px; text-align: left; }
 .chip { width: 14px; height: 14px; display: inline-block; border: 2px solid var(--ink); flex: none; }
 .chip.small { width: 9px; height: 9px; margin-right: 3px; }
@@ -120,11 +128,11 @@ button.ghost { background: transparent; color: #a8d8a0; border-color: #a8d8a0; b
 /* ---------- game layout ---------- */
 .gameWrap { display: flex; gap: 18px; height: 100vh; width: 100vw; padding: 12px; justify-content: center; }
 .towerCol {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
   height: 100%; flex: 0 1 auto; min-width: 0;
 }
 .towerPane {
-  flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center;
+  flex: 1 1 auto; min-height: 0; display: flex; align-items: flex-end; justify-content: center;
   position: relative; min-width: 220px; width: 100%; align-self: stretch;
 }
 #gameCanvas {
@@ -156,16 +164,24 @@ button.ghost { background: transparent; color: #a8d8a0; border-color: #a8d8a0; b
   padding: 6px 10px; font-size: 9px;
 }
 .standRow.me { border-color: var(--banana); }
+.raceTrack {
+  position: relative; height: 150px; margin: 2px 0;
+  background: rgba(0,0,0,.35); border: 2px solid var(--panel-edge);
+}
+.trackDot { position: absolute; width: 9px; height: 9px; border: 2px solid var(--ink); }
+.trackRoof { position: absolute; top: 2px; right: 4px; font-size: 7px; color: var(--banana); }
+.trackGround { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: #3a6e35; }
+.controlsHint { font-size: 7px; color: #7aa87a; line-height: 1.6; }
 .standName { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .standFloor { color: var(--banana); }
 .specRow { font-size: 8px; color: #a8d8a0; padding: 2px 4px; }
 
-/* question card — sits under the tower */
+/* question card — flush under the first-person view, same width */
 .qCard {
   background: var(--panel); border: 4px solid var(--ink);
   box-shadow: 0 0 0 3px var(--panel-edge);
   padding: 12px; transition: opacity .3s;
-  width: min(92vw, 600px); flex: none;
+  width: var(--viewW, min(92vw, 600px)); flex: none;
 }
 .qCard.faded { opacity: .45; }
 .qHead { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }

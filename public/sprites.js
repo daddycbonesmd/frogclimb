@@ -96,6 +96,55 @@ const CROWN = [
   'YYYYY',
 ];
 
+// First-person frog hands (left hand; right is mirrored at draw time)
+const FROG_HAND = [
+  '...KKKK...',
+  '..K1111K..',
+  '.K111111K.',
+  'K11111111K',
+  'K11211211K',
+  'K11211211K',
+  '.K111111K.',
+  '..KKKKKK..',
+];
+
+// Back view of a frog (opponent "ghosts" hopping in your room)
+const FROG_BACK = [
+  '.KKK..KKK.',
+  'K111KK111K',
+  'K11111111K',
+  'K13111131K',
+  'K11111111K',
+  'K13333331K',
+  '.K111111K.',
+  '.KK.KK.KK.',
+];
+
+// Businessman, front view — stepping out to punt you off the floor
+const BIZ_FRONT = [
+  '......KKKKKK......',
+  '.....KHHHHHHK.....',
+  '.....KSSSSSSK.....',
+  '....KSKKSSKKSK....',
+  '....KSSKSSKSSK....',
+  '....KSSSSSSSSK....',
+  '....KSKKKKKKSK....',
+  '.....KSSSSSSK.....',
+  '....KKKKWWKKKK....',
+  '..KK333KWWK333KK..',
+  '.K33333KRRK33333K.',
+  'K333K33KRRK33K333K',
+  'K3S3K33KRRK33K3S3K',
+  'KKKKK33KRRK33KKKKK',
+  '....K33333333K....',
+  '....K33333333K....',
+  '....K333KK333K....',
+  '....K333KK333K....',
+  '....K333KK333K....',
+  '...KK333KK333KK...',
+  '...KKKKKKKKKKKK...',
+];
+
 const SPRITE_PALETTE = {
   K: '#141419',
   W: '#f5f5ef',

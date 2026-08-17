@@ -67,14 +67,19 @@ function shuffle(arr) {
   return arr;
 }
 
+const DIFFICULTIES = ['easy', 'medium', 'hard'];
+const DIFF_TIER = { easy: 1, medium: 2, hard: 3 };
+
 function makeRoom() {
   const room = {
     code: newCode(),
     players: new Map(), // id -> player
     hostId: null,
     phase: 'lobby', // lobby | getready | question | reveal | winner
+    difficulty: 'medium',
     deck: [],
     deckPos: 0,
+    used: new Set(),   // question indices already dealt in this room (across rematches)
     qNum: 0,
     current: null, // { q, options, correctIdx, deadline, answers: Map(id->{idx,at}) }
     timer: null,
@@ -83,6 +88,18 @@ function makeRoom() {
   };
   rooms.set(room.code, room);
   return room;
+}
+
+// Deal only unseen questions of the room's difficulty; recycle when the pool runs dry.
+function buildDeck(room) {
+  const tier = DIFF_TIER[room.difficulty] || 2;
+  const all = [...QUESTIONS.keys()].filter(i => QUESTIONS[i].d === tier);
+  let pool = all.filter(i => !room.used.has(i));
+  if (pool.length < 40) {
+    for (const i of all) room.used.delete(i);
+    pool = all;
+  }
+  return shuffle(pool);
 }
 
 function makePlayer(room, name, ws) {
@@ -124,6 +141,7 @@ function roster(room) {
     code: room.code,
     phase: room.phase,
     hostId: room.hostId,
+    difficulty: room.difficulty,
     floors: FLOORS,
     players: [...room.players.values()].map(p => ({
       id: p.id, name: p.name, color: p.color, floor: p.floor,
@@ -140,7 +158,7 @@ function activePlayers(room) {
 
 function startMatch(room) {
   clearTimeout(room.timer);
-  room.deck = shuffle([...QUESTIONS.keys()]);
+  room.deck = buildDeck(room);
   room.deckPos = 0;
   room.qNum = 0;
   room.winners = [];
@@ -155,8 +173,10 @@ function startMatch(room) {
 }
 
 function nextQuestion(room) {
-  if (room.deckPos >= room.deck.length) room.deck = shuffle([...QUESTIONS.keys()]), room.deckPos = 0;
-  const q = QUESTIONS[room.deck[room.deckPos++]];
+  if (room.deckPos >= room.deck.length) { room.deck = buildDeck(room); room.deckPos = 0; }
+  const qi = room.deck[room.deckPos++];
+  room.used.add(qi);
+  const q = QUESTIONS[qi];
   room.qNum++;
   const options = shuffle([q.correct, ...q.wrong]);
   room.current = {
@@ -323,6 +343,15 @@ wss.on('connection', (ws) => {
         if (player.id !== room.hostId) return;
         if (room.phase !== 'lobby' && room.phase !== 'winner') return;
         startMatch(room);
+        break;
+      }
+      case 'difficulty': {
+        if (!room || !player) return;
+        if (player.id !== room.hostId) return;
+        if (room.phase !== 'lobby' && room.phase !== 'winner') return;
+        if (!DIFFICULTIES.includes(msg.v)) return;
+        room.difficulty = msg.v;
+        syncRoster(room);
         break;
       }
       case 'answer': {
