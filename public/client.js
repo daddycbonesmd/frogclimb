@@ -217,10 +217,11 @@
     els.qCat.textContent = msg.cat;
     els.qText.textContent = msg.text;
     els.answers.innerHTML = '';
+    const DOOR_COLS = ['#57d557', '#f0c840', '#4e9ee8', '#e85e4e'];
     msg.options.forEach((opt, i) => {
       const b = document.createElement('button');
       b.className = 'ans';
-      b.innerHTML = `<span class="key">${i + 1}</span><span class="optText">${opt}</span><span class="pickRow" data-i="${i}"></span>`;
+      b.innerHTML = `<span class="key" style="background:${DOOR_COLS[i]}">${i + 1}</span><span class="optText">${opt}</span><span class="pickRow" data-i="${i}"></span>`;
       b.onclick = () => pick(i);
       if (myPick === i) b.classList.add('picked');
       els.answers.appendChild(b);
@@ -239,6 +240,7 @@
     myPick = i;
     sendMsg({ t: 'answer', idx: i });
     SFX.click();
+    Renderer.setChosen(i);
     [...els.answers.children].forEach((b, j) => b.classList.toggle('picked', j === i));
     els.answers.classList.add('locked');
   }
@@ -399,32 +401,26 @@
   els.leaveBtn.onclick = leave;
   els.overlayLeaveBtn.onclick = () => { els.overlay.classList.add('hidden'); leave(); };
 
-  document.addEventListener('keydown', e => {
+  // FPS controls: WASD walk, arrows turn/walk, mouse looks (pointer lock in renderer)
+  const KEYMAP = {
+    KeyW: 'fwd', ArrowUp: 'fwd',
+    KeyS: 'back', ArrowDown: 'back',
+    KeyA: 'left', KeyD: 'right',
+    ArrowLeft: 'turnL', ArrowRight: 'turnR',
+  };
+  function setKey(e, down) {
     if (els.game.classList.contains('hidden')) return;
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-    const k = e.key;
-    let i = -1;
-    if (k >= '1' && k <= '4') i = k.charCodeAt(0) - 49;
-    if (i >= 0) { pick(i); return; }
-    const dirs = {
-      ArrowLeft: 'left', a: 'left', A: 'left',
-      ArrowRight: 'right', d: 'right', D: 'right',
-      ArrowUp: 'up', w: 'up', W: 'up',
-      ArrowDown: 'down', s: 'down', S: 'down',
-    };
-    if (dirs[k]) { e.preventDefault(); Renderer.move(dirs[k]); }
-  });
+    if (down && e.key >= '1' && e.key <= '4') { pick(e.key.charCodeAt(0) - 49); return; }
+    const slot = KEYMAP[e.code];
+    if (slot) { e.preventDefault(); Renderer.input[slot] = down; }
+  }
+  document.addEventListener('keydown', e => setKey(e, true));
+  document.addEventListener('keyup', e => setKey(e, false));
+  window.addEventListener('blur', () => { for (const k of Object.keys(Renderer.input)) Renderer.input[k] = false; });
 
-  // click / tap on the view hops toward the door or sideways
-  els.canvas.addEventListener('pointerdown', e => {
-    const r = els.canvas.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width;
-    const y = (e.clientY - r.top) / r.height;
-    if (y < 0.45) Renderer.move('up');
-    else if (x < 0.33) Renderer.move('left');
-    else if (x > 0.67) Renderer.move('right');
-    else Renderer.move('up');
-  });
+  // walking into a door answers the question
+  Renderer.onChoose = idx => pick(idx);
 
   // difficulty buttons (host only)
   [...document.querySelectorAll('.diffBtn')].forEach(b => {
