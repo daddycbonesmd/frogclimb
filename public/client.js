@@ -67,8 +67,8 @@
     };
   })();
 
-  els.muteBtn.textContent = SFX.muted ? '🔇' : '🔊';
-  els.muteBtn.onclick = () => { els.muteBtn.textContent = SFX.toggle() ? '🔇' : '🔊'; };
+  els.muteBtn.textContent = SFX.muted ? 'SND OFF' : 'SND ON';
+  els.muteBtn.onclick = () => { els.muteBtn.textContent = SFX.toggle() ? 'SND OFF' : 'SND ON'; };
 
   // ---------------------------------------------------------------- helpers
   function show(scene) {
@@ -160,12 +160,26 @@
     const me = myPlayer();
     els.specTag.classList.toggle('hidden', !(me && me.spectator));
 
+    // rejoined into a finished match: rebuild the winner overlay
+    if (msg.phase === 'winner' && els.overlay.classList.contains('hidden')) {
+      const tops = msg.players.filter(p => p.floor >= msg.floors);
+      if (tops.length) {
+        Renderer.setWinners(tops.map(p => p.id));
+        const iWon = you && tops.some(p => p.id === you.id);
+        els.overlay.classList.remove('hidden');
+        els.overlayTitle.textContent = iWon ? 'YOU WIN!' : `${tops.map(p => p.name).join(' & ')} WINS!`;
+        const isHost = you && msg.hostId === you.id;
+        els.overlaySub.textContent = isHost ? 'Go again?' : 'Waiting for the host…';
+        els.againBtn.classList.toggle('hidden', !isHost);
+      }
+    }
+
     if (msg.phase === 'lobby') {
       show(els.lobby);
       els.lobbyCode.textContent = msg.code;
       els.lobbyPlayers.innerHTML = msg.players.map(p => {
         const col = FROG_COLORS[p.color % FROG_COLORS.length];
-        return `<div class="lobbyFrog"><span class="chip" style="background:${col.body}"></span>${p.name}${p.id === msg.hostId ? ' 👑' : ''}${p.connected ? '' : ' (zzz)'}</div>`;
+        return `<div class="lobbyFrog"><span class="chip" style="background:${col.body}"></span>${p.name}${p.id === msg.hostId ? ' <span class="hostTag">HOST</span>' : ''}${p.connected ? '' : ' (zzz)'}</div>`;
       }).join('');
       const isHost = you && msg.hostId === you.id;
       els.startBtn.classList.toggle('hidden', !isHost);
@@ -279,11 +293,11 @@
 
     // feed lines
     const fastest = msg.results.find(r => r.fastest);
-    if (fastest) feed(`⚡ ${nameOf(fastest.id)} was fastest — up 2 floors!`, 'good');
+    if (fastest) feed(`${nameOf(fastest.id)} was fastest — up 2 floors!`, 'good');
     const kicked = msg.results.filter(r => r.kicked);
     if (kicked.length) {
       const names = kicked.map(r => nameOf(r.id)).join(', ');
-      feed(`👞 The businessman kicked ${names} down!`, 'bad');
+      feed(`The businessman kicked ${names} down!`, 'bad');
     }
     if (!msg.results.some(r => r.answered)) feed('Nobody answered?! The tower echoes with boots.', 'bad');
     setTimeout(renderStandings, 1500);
@@ -294,7 +308,7 @@
     const iWon = you && msg.ids.includes(you.id);
     if (iWon) SFX.win(); else SFX.lose();
     els.overlay.classList.remove('hidden');
-    els.overlayTitle.textContent = iWon ? '🏆 YOU WIN!' : `👑 ${msg.ids.map(nameOf).join(' & ')} WINS!`;
+    els.overlayTitle.textContent = iWon ? 'YOU WIN!' : `${msg.ids.map(nameOf).join(' & ')} WINS!`;
     els.overlaySub.textContent = iWon
       ? 'You reached the roof party. The businessman is furious.'
       : 'Better hops next time.';
@@ -314,13 +328,13 @@
         const me = you && p.id === you.id;
         return `<div class="standRow ${me ? 'me' : ''}">
           <span class="chip" style="background:${col.body}"></span>
-          <span class="standName">${p.name}${p.connected ? '' : ' 💤'}</span>
+          <span class="standName">${p.name}${p.connected ? '' : ' (zzz)'}</span>
           <span class="standFloor">${p.floor >= 15 ? 'ROOF' : 'F' + p.floor}</span>
         </div>`;
       }).join('');
     const specs = room.players.filter(p => p.spectator);
     els.standings.innerHTML = rows +
-      (specs.length ? `<div class="specRow">👀 ${specs.map(s => s.name).join(', ')}</div>` : '');
+      (specs.length ? `<div class="specRow">WATCHING: ${specs.map(s => s.name).join(', ')}</div>` : '');
   }
 
   // ---------------------------------------------------------------- UI events
@@ -369,6 +383,14 @@
   // ---------------------------------------------------------------- boot
   Renderer.init(els.canvas);
   els.nameInput.value = localStorage.getItem('frog_name') || '';
+
+  // pixel frog logo on the menu
+  for (const id of ['logoFrogL', 'logoFrogR']) {
+    const c = document.getElementById(id);
+    if (!c) continue;
+    const col = FROG_COLORS[0];
+    c.getContext('2d').drawImage(makeSprite(FROG_IDLE, { 1: col.body, 2: col.belly, 3: col.dark }), 0, 0);
+  }
 
   // try to resume a previous session
   const saved = localStorage.getItem('frog_session');

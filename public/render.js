@@ -638,7 +638,7 @@ const Renderer = (() => {
     const box = cv.parentElement.getBoundingClientRect();
     if (box.width === cssW && box.height === cssH) return;
     cssW = box.width; cssH = box.height;
-    const scale = Math.max(1, Math.floor(Math.min(cssW / W, cssH / H)));
+    const scale = Math.max(1, Math.floor(Math.min(cssW / W, cssH / H) * 2) / 2);
     cv.width = W; cv.height = H;
     cv.style.width = (W * scale) + 'px';
     cv.style.height = (H * scale) + 'px';

@@ -13,11 +13,11 @@
 <div id="menu" class="scene">
   <div class="card menuCard">
     <div class="logo">
-      <span class="logoFrog">🐸</span>
+      <canvas class="logoFrog" id="logoFrogL" width="14" height="12"></canvas>
       <h1>FROG&nbsp;TOWER</h1>
-      <span class="logoFrog flip">🐸</span>
+      <canvas class="logoFrog flip" id="logoFrogR" width="14" height="12"></canvas>
     </div>
-    <p class="tagline">Climb the evil businessman's skyscraper.<br>Answer fast. Don't get the boot. 👞</p>
+    <p class="tagline">Climb the evil businessman's skyscraper.<br>Answer fast. Don't get the boot.</p>
     <input id="nameInput" maxlength="14" placeholder="YOUR FROG'S NAME" autocomplete="off">
     <button id="createBtn" class="big green">CREATE ROOM</button>
     <div class="joinRow">
@@ -26,10 +26,10 @@
     </div>
     <div id="menuErr" class="err"></div>
     <div class="rules">
-      <div>✅ Correct answer → climb 1 floor</div>
-      <div>⚡ Fastest correct frog → climbs 2</div>
-      <div>👞 Wrong / too slow → kicked down 1</div>
-      <div>🏁 First frog to floor 15 wins the roof party</div>
+      <div><span class="bullet b-green"></span>Correct answer — climb 1 floor</div>
+      <div><span class="bullet b-yellow"></span>Fastest correct frog — climbs 2</div>
+      <div><span class="bullet b-red"></span>Wrong or too slow — kicked down 1</div>
+      <div><span class="bullet b-blue"></span>First frog to floor 15 wins the roof party</div>
     </div>
   </div>
 </div>
@@ -53,17 +53,11 @@
 <!-- ===================== GAME ===================== -->
 <div id="game" class="scene hidden">
   <div class="gameWrap">
-    <div class="towerPane">
-      <canvas id="gameCanvas" width="200" height="280"></canvas>
-      <div id="getready" class="getready hidden">GET&nbsp;READY!</div>
-    </div>
-    <div class="sidePane">
-      <div class="topBar">
-        <span class="roomLabel">ROOM <b id="roomTag">----</b></span>
-        <span id="specTag" class="specTag hidden">SPECTATING</span>
-        <button id="muteBtn" class="small ghost">🔊</button>
+    <div class="towerCol">
+      <div class="towerPane">
+        <canvas id="gameCanvas" width="200" height="280"></canvas>
+        <div id="getready" class="getready hidden">GET&nbsp;READY!</div>
       </div>
-      <div id="standings" class="standings"></div>
       <div id="qCard" class="qCard faded">
         <div class="qHead">
           <span id="qNum" class="qNum">Q–</span>
@@ -75,6 +69,14 @@
         <div id="qText" class="qText">Waiting for the first question…</div>
         <div id="answers" class="answers"></div>
       </div>
+    </div>
+    <div class="sidePane">
+      <div class="topBar">
+        <span class="roomLabel">ROOM <b id="roomTag">----</b></span>
+        <span id="specTag" class="specTag hidden">SPECTATING</span>
+        <button id="muteBtn" class="small ghost">SND ON</button>
+      </div>
+      <div id="standings" class="standings"></div>
       <div id="feed" class="feed"></div>
     </div>
   </div>
