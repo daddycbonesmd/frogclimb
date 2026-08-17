@@ -259,6 +259,7 @@ const wss = new WebSocketServer({ server, maxPayload: 4 * 1024 });
 
 wss.on('connection', (ws) => {
   ws.isAlive = true;
+  ws.on('error', () => { try { ws.terminate(); } catch {} }); // ECONNRESET etc must not crash the process
   ws.on('pong', () => { ws.isAlive = true; });
   let room = null, player = null;
 
@@ -387,6 +388,9 @@ setInterval(() => {
     }
   }
 }, 25000);
+
+wss.on('error', err => console.error('wss error:', err.message));
+server.on('clientError', (err, socket) => { try { socket.destroy(); } catch {} });
 
 server.listen(PORT, () => {
   console.log(`FROG TOWER listening on http://localhost:${PORT} (${QUESTIONS.length} questions${FAST ? ', FAST mode' : ''})`);
