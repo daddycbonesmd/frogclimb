@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FROG TOWER 🐸</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐸</text></svg>">
+</head>
+<body>
+
+<!-- ===================== MENU ===================== -->
+<div id="menu" class="scene">
+  <div class="card menuCard">
+    <div class="logo">
+      <span class="logoFrog">🐸</span>
+      <h1>FROG&nbsp;TOWER</h1>
+      <span class="logoFrog flip">🐸</span>
+    </div>
+    <p class="tagline">Climb the evil businessman's skyscraper.<br>Answer fast. Don't get the boot. 👞</p>
+    <input id="nameInput" maxlength="14" placeholder="YOUR FROG'S NAME" autocomplete="off">
+    <button id="createBtn" class="big green">CREATE ROOM</button>
+    <div class="joinRow">
+      <input id="joinCode" maxlength="4" placeholder="CODE" autocomplete="off">
+      <button id="joinBtn" class="big blue">JOIN</button>
+    </div>
+    <div id="menuErr" class="err"></div>
+    <div class="rules">
+      <div>✅ Correct answer → climb 1 floor</div>
+      <div>⚡ Fastest correct frog → climbs 2</div>
+      <div>👞 Wrong / too slow → kicked down 1</div>
+      <div>🏁 First frog to floor 15 wins the roof party</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== LOBBY ===================== -->
+<div id="lobby" class="scene hidden">
+  <div class="card lobbyCard">
+    <h2>ROOM CODE</h2>
+    <div class="codeRow">
+      <div id="lobbyCode" class="codeBig">----</div>
+      <button id="copyBtn" class="small">COPY</button>
+    </div>
+    <p class="hint">Friends join at this address with the code. Up to 6 frogs.</p>
+    <div id="lobbyPlayers" class="lobbyPlayers"></div>
+    <button id="startBtn" class="big green hidden">START CLIMB</button>
+    <div id="lobbyHint" class="hint"></div>
+    <button id="leaveBtn" class="small ghost">LEAVE</button>
+  </div>
+</div>
+
+<!-- ===================== GAME ===================== -->
+<div id="game" class="scene hidden">
+  <div class="gameWrap">
+    <div class="towerPane">
+      <canvas id="gameCanvas" width="200" height="280"></canvas>
+      <div id="getready" class="getready hidden">GET&nbsp;READY!</div>
+    </div>
+    <div class="sidePane">
+      <div class="topBar">
+        <span class="roomLabel">ROOM <b id="roomTag">----</b></span>
+        <span id="specTag" class="specTag hidden">SPECTATING</span>
+        <button id="muteBtn" class="small ghost">🔊</button>
+      </div>
+      <div id="standings" class="standings"></div>
+      <div id="qCard" class="qCard faded">
+        <div class="qHead">
+          <span id="qNum" class="qNum">Q–</span>
+          <span id="qCat" class="qCat">Get ready…</span>
+        </div>
+        <div id="timerWrap" class="timerWrap" data-sec="">
+          <div id="timerBar"></div>
+        </div>
+        <div id="qText" class="qText">Waiting for the first question…</div>
+        <div id="answers" class="answers"></div>
+      </div>
+      <div id="feed" class="feed"></div>
+    </div>
+  </div>
+  <div id="overlay" class="overlay hidden">
+    <div class="card overlayCard">
+      <h2 id="overlayTitle">WINNER</h2>
+      <p id="overlaySub"></p>
+      <button id="againBtn" class="big green hidden">PLAY AGAIN</button>
+      <button id="overlayLeaveBtn" class="small ghost">LEAVE ROOM</button>
+    </div>
+  </div>
+</div>
+
+<script src="sprites.js"></script>
+<script src="render.js"></script>
+<script src="client.js"></script>
+</body>
+</html>

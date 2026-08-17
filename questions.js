@@ -1,0 +1,265 @@
+// FROG TOWER question bank.
+// Q(category, text, correctAnswer, wrong1, wrong2, wrong3)
+// The correct answer is ALWAYS first here; the server shuffles option order per send.
+function Q(cat, text, correct, ...wrong) {
+  return { cat, text, correct, wrong };
+}
+
+const QUESTIONS = [
+  // ---------------- ANIMALS ----------------
+  Q('Animals', 'What is the largest animal to have ever lived?', 'Blue whale', 'African elephant', 'Woolly mammoth', 'Giant squid'),
+  Q('Animals', 'What is a group of lions called?', 'A pride', 'A pack', 'A herd', 'A flock'),
+  Q('Animals', 'What is a baby frog called?', 'A tadpole', 'A froglet', 'A polliwink', 'A hatchling'),
+  Q('Animals', 'What is the fastest land animal?', 'Cheetah', 'Ostrich', 'Pronghorn', 'Greyhound'),
+  Q('Animals', 'Which of these birds cannot fly?', 'Penguin', 'Swan', 'Owl', 'Falcon'),
+  Q('Animals', 'How many hearts does an octopus have?', 'Three', 'One', 'Two', 'Five'),
+  Q('Animals', 'How many legs does a spider have?', 'Eight', 'Six', 'Ten', 'Twelve'),
+  Q('Animals', 'What is the largest living land animal?', 'African elephant', 'White rhino', 'Hippopotamus', 'Giraffe'),
+  Q('Animals', 'Which of these animals is a marsupial?', 'Kangaroo', 'Beaver', 'Raccoon', 'Hedgehog'),
+  Q('Animals', 'What do bees make honey from?', 'Nectar', 'Tree sap', 'Dew', 'Pollen only'),
+  Q('Animals', 'What is a baby kangaroo called?', 'A joey', 'A cub', 'A kit', 'A calf'),
+  Q('Animals', 'How many legs does an insect have?', 'Six', 'Four', 'Eight', 'Ten'),
+  Q('Animals', 'Which animal is called the King of the Jungle?', 'Lion', 'Tiger', 'Gorilla', 'Elephant'),
+  Q('Animals', 'What color is a polar bear’s skin under its fur?', 'Black', 'White', 'Pink', 'Gray'),
+  Q('Animals', 'Which sea creature has eight arms?', 'Octopus', 'Starfish', 'Jellyfish', 'Crab'),
+  Q('Animals', 'What is the tallest animal in the world?', 'Giraffe', 'Elephant', 'Ostrich', 'Camel'),
+  Q('Animals', 'Which of these animals often sleeps standing up?', 'Horse', 'Dog', 'Cat', 'Pig'),
+  Q('Animals', 'What is a group of wolves called?', 'A pack', 'A pride', 'A gaggle', 'A swarm'),
+  Q('Animals', 'Which of these mammals lays eggs?', 'Platypus', 'Bat', 'Dolphin', 'Sloth'),
+  Q('Animals', 'What do giant pandas mainly eat?', 'Bamboo', 'Fish', 'Ants', 'Berries'),
+  Q('Animals', 'Which of these animals is the slowest?', 'Sloth', 'Tortoise-eating hare', 'Housecat', 'Chicken'),
+  Q('Animals', 'Frogs can breathe through their lungs and their what?', 'Skin', 'Ears', 'Feet', 'Tongue'),
+  Q('Animals', 'What do caterpillars turn into?', 'Butterflies or moths', 'Beetles', 'Dragonflies', 'Grasshoppers'),
+  Q('Animals', 'What is a baby dog called?', 'A puppy', 'A kitten', 'A cub', 'A foal'),
+  Q('Animals', 'A frog catches insects using its what?', 'Tongue', 'Claws', 'Tail', 'Wings'),
+
+  // ---------------- SCIENCE ----------------
+  Q('Science', 'What is H2O better known as?', 'Water', 'Salt', 'Oxygen', 'Hydrogen peroxide'),
+  Q('Science', 'Which element has the chemical symbol Au?', 'Gold', 'Silver', 'Aluminum', 'Copper'),
+  Q('Science', 'What is the closest star to Earth?', 'The Sun', 'Alpha Centauri', 'Polaris', 'Sirius'),
+  Q('Science', 'What force pulls objects toward the Earth?', 'Gravity', 'Magnetism', 'Friction', 'Inertia'),
+  Q('Science', 'What is the largest organ of the human body?', 'Skin', 'Liver', 'Brain', 'Lungs'),
+  Q('Science', 'How many bones does an adult human have?', '206', '106', '306', '250'),
+  Q('Science', 'Which gas do plants absorb from the air?', 'Carbon dioxide', 'Oxygen', 'Nitrogen', 'Helium'),
+  Q('Science', 'Roughly how fast does light travel?', '300,000 km per second', '300 km per second', '3,000 km per second', '30,000 km per hour'),
+  Q('Science', 'What is the center of an atom called?', 'The nucleus', 'The core', 'The proton', 'The shell'),
+  Q('Science', 'Which element has the symbol O?', 'Oxygen', 'Osmium', 'Gold', 'Iron'),
+  Q('Science', 'At what temperature does water boil at sea level?', '100°C', '90°C', '110°C', '120°C'),
+  Q('Science', 'At what temperature does water freeze?', '0°C', '10°C', '-10°C', '5°C'),
+  Q('Science', 'Which of these is NOT a state of matter?', 'Energy', 'Solid', 'Liquid', 'Gas'),
+  Q('Science', 'What shape is a DNA molecule?', 'A double helix', 'A sphere', 'A cube', 'A flat ribbon'),
+  Q('Science', 'Animals that eat only plants are called what?', 'Herbivores', 'Carnivores', 'Omnivores', 'Insectivores'),
+  Q('Science', 'Which metal is liquid at room temperature?', 'Mercury', 'Lead', 'Tin', 'Sodium'),
+  Q('Science', 'Which part of an animal cell contains its DNA?', 'The nucleus', 'The cell wall', 'The mitochondria', 'The cytoplasm'),
+  Q('Science', 'What is the hardest natural substance on Earth?', 'Diamond', 'Granite', 'Steel', 'Quartz'),
+  Q('Science', 'Which gas do humans need to breathe to survive?', 'Oxygen', 'Carbon dioxide', 'Nitrogen', 'Hydrogen'),
+  Q('Science', 'What is the unit of electrical current?', 'Ampere', 'Volt', 'Watt', 'Ohm'),
+  Q('Science', 'What does a thermometer measure?', 'Temperature', 'Pressure', 'Humidity', 'Wind speed'),
+  Q('Science', 'Which vitamin does your body make from sunlight?', 'Vitamin D', 'Vitamin C', 'Vitamin A', 'Vitamin B12'),
+  Q('Science', 'Sound travels fastest through which of these?', 'Steel', 'Air', 'Water', 'A vacuum'),
+  Q('Science', 'What kind of animal is a frog?', 'An amphibian', 'A reptile', 'A mammal', 'A fish'),
+
+  // ---------------- GEOGRAPHY ----------------
+  Q('Geography', 'What is the largest ocean on Earth?', 'Pacific Ocean', 'Atlantic Ocean', 'Indian Ocean', 'Arctic Ocean'),
+  Q('Geography', 'What is the capital of France?', 'Paris', 'Lyon', 'Marseille', 'Nice'),
+  Q('Geography', 'What is the capital of Japan?', 'Tokyo', 'Osaka', 'Kyoto', 'Hiroshima'),
+  Q('Geography', 'What is the largest country by area?', 'Russia', 'Canada', 'China', 'USA'),
+  Q('Geography', 'What is the smallest country in the world?', 'Vatican City', 'Monaco', 'Malta', 'Liechtenstein'),
+  Q('Geography', 'How many continents are there?', 'Seven', 'Five', 'Six', 'Eight'),
+  Q('Geography', 'On which continent is the Sahara Desert?', 'Africa', 'Asia', 'Australia', 'South America'),
+  Q('Geography', 'What is the capital of Australia?', 'Canberra', 'Sydney', 'Melbourne', 'Perth'),
+  Q('Geography', 'Which country is shaped like a boot?', 'Italy', 'Spain', 'Chile', 'Portugal'),
+  Q('Geography', 'Mount Everest is part of which mountain range?', 'The Himalayas', 'The Andes', 'The Alps', 'The Rockies'),
+  Q('Geography', 'Which US state is the largest by area?', 'Alaska', 'Texas', 'California', 'Montana'),
+  Q('Geography', 'The Great Barrier Reef is off the coast of which country?', 'Australia', 'Brazil', 'Mexico', 'Indonesia'),
+  Q('Geography', 'What is the capital of Canada?', 'Ottawa', 'Toronto', 'Vancouver', 'Montreal'),
+  Q('Geography', 'Which continent is the coldest?', 'Antarctica', 'Europe', 'North America', 'Asia'),
+  Q('Geography', 'Most of the Amazon rainforest is in which country?', 'Brazil', 'Peru', 'Colombia', 'Venezuela'),
+  Q('Geography', 'What is the capital of Italy?', 'Rome', 'Milan', 'Venice', 'Naples'),
+  Q('Geography', 'Which country has the largest population?', 'India', 'China', 'USA', 'Indonesia'),
+  Q('Geography', 'Niagara Falls sits on the border of the USA and which country?', 'Canada', 'Mexico', 'Greenland', 'Cuba'),
+  Q('Geography', 'Which ocean lies between Africa and Australia?', 'Indian Ocean', 'Atlantic Ocean', 'Pacific Ocean', 'Southern Ocean'),
+  Q('Geography', 'Which river flows through Egypt?', 'The Nile', 'The Amazon', 'The Danube', 'The Ganges'),
+  Q('Geography', 'What is the capital of Spain?', 'Madrid', 'Barcelona', 'Seville', 'Valencia'),
+  Q('Geography', 'Which country gave the Statue of Liberty to the USA?', 'France', 'England', 'Italy', 'Spain'),
+  Q('Geography', 'The Alps are located on which continent?', 'Europe', 'Asia', 'South America', 'North America'),
+  Q('Geography', 'What is the largest hot desert in the world?', 'The Sahara', 'The Gobi', 'The Mojave', 'The Kalahari'),
+  Q('Geography', 'What is the capital of Germany?', 'Berlin', 'Munich', 'Frankfurt', 'Hamburg'),
+  Q('Geography', 'Which US city is nicknamed The Big Apple?', 'New York City', 'Chicago', 'Los Angeles', 'Boston'),
+
+  // ---------------- HISTORY ----------------
+  Q('History', 'Who was the first President of the United States?', 'George Washington', 'Thomas Jefferson', 'Abraham Lincoln', 'John Adams'),
+  Q('History', 'In what year did the Titanic sink?', '1912', '1905', '1920', '1898'),
+  Q('History', 'In what year did World War II end?', '1945', '1939', '1942', '1950'),
+  Q('History', 'Which ancient civilization built the pyramids of Giza?', 'The Egyptians', 'The Romans', 'The Greeks', 'The Aztecs'),
+  Q('History', 'Who painted the Mona Lisa?', 'Leonardo da Vinci', 'Michelangelo', 'Vincent van Gogh', 'Pablo Picasso'),
+  Q('History', 'The Great Wall is located in which country?', 'China', 'Japan', 'India', 'Mongolia'),
+  Q('History', 'What language did the ancient Romans speak?', 'Latin', 'Greek', 'Italian', 'Hebrew'),
+  Q('History', 'Who described gravity after famously seeing an apple fall?', 'Isaac Newton', 'Albert Einstein', 'Galileo Galilei', 'Charles Darwin'),
+  Q('History', 'In which country were the first Olympic Games held?', 'Greece', 'Italy', 'Egypt', 'France'),
+  Q('History', 'Which Egyptian queen was famous for her ties to Rome?', 'Cleopatra', 'Nefertiti', 'Isis', 'Hatshepsut'),
+  Q('History', 'The Vikings originally came from which region?', 'Scandinavia', 'Germany', 'Russia', 'Scotland'),
+  Q('History', 'Which ship carried the Pilgrims to America in 1620?', 'The Mayflower', 'The Santa Maria', 'The Endeavour', 'The Beagle'),
+  Q('History', 'Who invented the telephone?', 'Alexander Graham Bell', 'Thomas Edison', 'Nikola Tesla', 'Samuel Morse'),
+  Q('History', 'Which inventor is famous for the practical light bulb?', 'Thomas Edison', 'Benjamin Franklin', 'Alexander Bell', 'Henry Ford'),
+  Q('History', 'Gladiators fought in the Colosseum in which city?', 'Rome', 'Athens', 'Cairo', 'Istanbul'),
+  Q('History', 'In what year did the Berlin Wall fall?', '1989', '1979', '1991', '1985'),
+  Q('History', 'Knights in the Middle Ages wore suits of what?', 'Armor', 'Silk', 'Wool', 'Leather only'),
+  Q('History', 'Which country did ninjas and samurai come from?', 'Japan', 'China', 'Korea', 'Thailand'),
+
+  // ---------------- FOOD ----------------
+  Q('Food', 'Sushi originally comes from which country?', 'Japan', 'China', 'Thailand', 'Korea'),
+  Q('Food', 'What is the main ingredient in guacamole?', 'Avocado', 'Cucumber', 'Green pepper', 'Peas'),
+  Q('Food', 'Which fruit wears its seeds on the outside?', 'Strawberry', 'Kiwi', 'Blueberry', 'Fig'),
+  Q('Food', 'Pizza originated in which country?', 'Italy', 'Greece', 'France', 'USA'),
+  Q('Food', 'What do bees produce that people eat?', 'Honey', 'Syrup', 'Nectar jam', 'Sugar'),
+  Q('Food', 'Pickles are usually made from which vegetable?', 'Cucumbers', 'Zucchini', 'Celery', 'Green beans'),
+  Q('Food', 'Which country is famous for the croissant?', 'France', 'Belgium', 'Switzerland', 'Denmark'),
+  Q('Food', 'What is tofu made from?', 'Soybeans', 'Rice', 'Wheat', 'Potatoes'),
+  Q('Food', 'Raisins are dried what?', 'Grapes', 'Plums', 'Cherries', 'Cranberries'),
+  Q('Food', 'Traditional pesto contains which nut?', 'Pine nuts', 'Peanuts', 'Almonds', 'Cashews'),
+  Q('Food', 'What is the main ingredient of hummus?', 'Chickpeas', 'Lentils', 'White beans', 'Eggplant'),
+  Q('Food', 'Which cheese tops a classic pizza Margherita?', 'Mozzarella', 'Cheddar', 'Parmesan', 'Feta'),
+  Q('Food', 'Chocolate is made from which bean?', 'Cacao beans', 'Coffee beans', 'Vanilla beans', 'Soy beans'),
+  Q('Food', 'Paella is a famous dish from which country?', 'Spain', 'Portugal', 'Mexico', 'Italy'),
+
+  // ---------------- SPORTS ----------------
+  Q('Sports', 'How many players are on a soccer team on the field?', 'Eleven', 'Nine', 'Ten', 'Twelve'),
+  Q('Sports', 'How often are the Summer Olympic Games held?', 'Every 4 years', 'Every 2 years', 'Every 5 years', 'Every year'),
+  Q('Sports', 'In which sport do you score a touchdown?', 'American football', 'Rugby', 'Basketball', 'Cricket'),
+  Q('Sports', 'How many rings are on the Olympic flag?', 'Five', 'Four', 'Six', 'Seven'),
+  Q('Sports', 'Which sport is played with a shuttlecock?', 'Badminton', 'Tennis', 'Squash', 'Table tennis'),
+  Q('Sports', 'How high is a basketball hoop?', '10 feet', '8 feet', '12 feet', '15 feet'),
+  Q('Sports', 'In which sport can you hit a hole-in-one?', 'Golf', 'Cricket', 'Baseball', 'Polo'),
+  Q('Sports', 'In tennis, what is a score of zero called?', 'Love', 'Nil', 'Duck', 'Blank'),
+  Q('Sports', 'Wimbledon is a famous tournament in which sport?', 'Tennis', 'Golf', 'Cricket', 'Rowing'),
+  Q('Sports', 'How many players per basketball team are on the court?', 'Five', 'Six', 'Seven', 'Four'),
+  Q('Sports', 'In baseball, how many strikes make an out?', 'Three', 'Two', 'Four', 'Five'),
+  Q('Sports', 'Which sport is played with a puck?', 'Ice hockey', 'Lacrosse', 'Field hockey', 'Curling'),
+  Q('Sports', 'A marathon is about how many kilometers?', '42 km', '26 km', '50 km', '35 km'),
+  Q('Sports', 'Which martial art comes from Japan?', 'Judo', 'Taekwondo', 'Kung fu', 'Muay Thai'),
+
+  // ---------------- SPACE ----------------
+  Q('Space', 'Which planet is known as the Red Planet?', 'Mars', 'Venus', 'Jupiter', 'Mercury'),
+  Q('Space', 'What is the largest planet in our solar system?', 'Jupiter', 'Saturn', 'Neptune', 'Earth'),
+  Q('Space', 'Which planet is famous for its rings?', 'Saturn', 'Mars', 'Venus', 'Mercury'),
+  Q('Space', 'Which planet is closest to the Sun?', 'Mercury', 'Venus', 'Earth', 'Mars'),
+  Q('Space', 'What is Earth’s natural satellite called?', 'The Moon', 'Titan', 'Europa', 'Phobos'),
+  Q('Space', 'How many planets are in our solar system?', 'Eight', 'Nine', 'Seven', 'Ten'),
+  Q('Space', 'Who was the first person to walk on the Moon?', 'Neil Armstrong', 'Buzz Aldrin', 'Yuri Gagarin', 'John Glenn'),
+  Q('Space', 'The Sun is a what?', 'A star', 'A planet', 'A comet', 'A galaxy'),
+  Q('Space', 'What galaxy do we live in?', 'The Milky Way', 'Andromeda', 'The Whirlpool', 'The Sombrero'),
+  Q('Space', 'Which planet has the Great Red Spot?', 'Jupiter', 'Mars', 'Saturn', 'Neptune'),
+  Q('Space', 'What is the hottest planet in our solar system?', 'Venus', 'Mercury', 'Mars', 'Jupiter'),
+  Q('Space', 'A space rock burning up in the atmosphere is called a what?', 'Meteor', 'Comet', 'Asteroid', 'Nebula'),
+  Q('Space', 'Which famous space telescope launched in 1990?', 'Hubble', 'Kepler', 'Galileo', 'Voyager'),
+  Q('Space', 'What do astronauts wear in space to survive?', 'Spacesuits', 'Wetsuits', 'Flight jackets', 'Parachutes'),
+
+  // ---------------- MOVIES & TV ----------------
+  Q('Movies & TV', 'Buzz Lightyear appears in which movie series?', 'Toy Story', 'Shrek', 'Cars', 'Monsters, Inc.'),
+  Q('Movies & TV', 'What is the wizard school in Harry Potter called?', 'Hogwarts', 'Narnia', 'Rivendell', 'Camelot'),
+  Q('Movies & TV', 'In The Lion King, what animal is Simba?', 'A lion', 'A tiger', 'A leopard', 'A hyena'),
+  Q('Movies & TV', 'What is the name of Mickey Mouse’s dog?', 'Pluto', 'Goofy', 'Rex', 'Max'),
+  Q('Movies & TV', 'In Finding Nemo, what kind of fish is Nemo?', 'A clownfish', 'A goldfish', 'An angelfish', 'A pufferfish'),
+  Q('Movies & TV', 'What kind of creature is Shrek?', 'An ogre', 'A troll', 'A giant', 'A goblin'),
+  Q('Movies & TV', 'Which superhero comes from the planet Krypton?', 'Superman', 'Batman', 'Thor', 'Green Lantern'),
+  Q('Movies & TV', 'Elsa sings “Let It Go” in which movie?', 'Frozen', 'Moana', 'Tangled', 'Brave'),
+  Q('Movies & TV', 'The Minions appear in which movie series?', 'Despicable Me', 'Madagascar', 'Ice Age', 'Trolls'),
+  Q('Movies & TV', 'Darth Vader is a villain in which saga?', 'Star Wars', 'Star Trek', 'Dune', 'The Matrix'),
+  Q('Movies & TV', 'Which movie features a time-traveling DeLorean?', 'Back to the Future', 'The Terminator', 'Looper', 'Interstellar'),
+  Q('Movies & TV', 'SpongeBob SquarePants lives in what?', 'A pineapple', 'A shell', 'A shipwreck', 'A cave'),
+  Q('Movies & TV', 'Batman protects which city?', 'Gotham City', 'Metropolis', 'Star City', 'Central City'),
+  Q('Movies & TV', 'In The Lord of the Rings, hobbits live in the what?', 'The Shire', 'Mordor', 'Gondor', 'The Misty Mountains'),
+  Q('Movies & TV', 'Which movie features a frog named Kermit?', 'The Muppet Movie', 'Ratatouille', 'Zootopia', 'Rio'),
+
+  // ---------------- MUSIC ----------------
+  Q('Music', 'How many strings does a standard guitar have?', 'Six', 'Four', 'Five', 'Seven'),
+  Q('Music', 'Beethoven was famous as a what?', 'Composer', 'Painter', 'Sculptor', 'Poet'),
+  Q('Music', 'Which instrument has 88 keys?', 'Piano', 'Organ', 'Accordion', 'Harpsichord'),
+  Q('Music', 'The Beatles came from which city?', 'Liverpool', 'London', 'Manchester', 'Dublin'),
+  Q('Music', 'A violin is played with a what?', 'Bow', 'Pick', 'Mallet', 'Reed'),
+  Q('Music', 'Which of these is a brass instrument?', 'Trumpet', 'Clarinet', 'Violin', 'Flute'),
+  Q('Music', 'Which drum in a drum kit is played with a foot pedal?', 'Bass drum', 'Snare drum', 'Tom-tom', 'Bongo'),
+  Q('Music', 'In the do-re-mi scale, what comes after “do”?', 'Re', 'Mi', 'Fa', 'La'),
+  Q('Music', 'A DJ traditionally spins records on a what?', 'Turntable', 'Keyboard', 'Drum machine', 'Jukebox'),
+  Q('Music', 'What was Mozart’s first name?', 'Wolfgang', 'Ludwig', 'Johann', 'Franz'),
+
+  // ---------------- GAMES ----------------
+  Q('Games', 'What is the name of Mario’s brother?', 'Luigi', 'Wario', 'Toad', 'Yoshi'),
+  Q('Games', 'What type of Pokémon is Pikachu?', 'Electric', 'Fire', 'Water', 'Grass'),
+  Q('Games', 'What does a Creeper do in Minecraft?', 'Explodes', 'Shoots arrows', 'Steals items', 'Builds walls'),
+  Q('Games', 'Sonic is what kind of animal?', 'A hedgehog', 'A fox', 'A porcupine', 'A rabbit'),
+  Q('Games', 'In Tetris, what do you stack?', 'Falling blocks', 'Marbles', 'Cards', 'Rings'),
+  Q('Games', 'Link is the hero of which game series?', 'The Legend of Zelda', 'Final Fantasy', 'Metroid', 'Kirby'),
+  Q('Games', 'What does Pac-Man eat as he moves through the maze?', 'Dots', 'Coins', 'Stars', 'Cherries only'),
+  Q('Games', 'Which company makes the PlayStation?', 'Sony', 'Nintendo', 'Microsoft', 'Sega'),
+  Q('Games', 'What color is Kirby?', 'Pink', 'Blue', 'Yellow', 'Green'),
+  Q('Games', 'In chess, which piece moves in an L shape?', 'The knight', 'The bishop', 'The rook', 'The queen'),
+  Q('Games', 'In Among Us, what do crewmates do to win?', 'Complete tasks', 'Collect coins', 'Build ships', 'Catch fish'),
+  Q('Games', 'Donkey Kong famously throws what?', 'Barrels', 'Bananas', 'Hammers', 'Coconuts'),
+  Q('Games', 'In which game series do you catch creatures with Poké Balls?', 'Pokémon', 'Digimon', 'Monster Hunter', 'Yo-kai Watch'),
+  Q('Games', 'In Mario games, what do you collect for points and lives?', 'Coins', 'Gems', 'Rings', 'Orbs'),
+  Q('Games', 'Frogger is a classic game about a frog doing what?', 'Crossing a busy road', 'Baking pies', 'Racing cars', 'Fighting robots'),
+
+  // ---------------- WORDS ----------------
+  Q('Words', 'What is the opposite of “ancient”?', 'Modern', 'Old', 'Historic', 'Classic'),
+  Q('Words', 'What is the plural of “mouse”?', 'Mice', 'Mouses', 'Meese', 'Mouse'),
+  Q('Words', 'Which of these words is a palindrome?', 'Level', 'Ladder', 'Mirror', 'Turtle'),
+  Q('Words', 'Which punctuation mark ends a question?', 'Question mark', 'Period', 'Comma', 'Colon'),
+  Q('Words', 'Which word means the same as “happy”?', 'Joyful', 'Gloomy', 'Angry', 'Tired'),
+  Q('Words', 'How many letters are in the English alphabet?', '26', '24', '25', '27'),
+  Q('Words', 'Which language has the most native speakers worldwide?', 'Mandarin Chinese', 'English', 'Spanish', 'Hindi'),
+  Q('Words', 'A person who writes books is called an what?', 'Author', 'Editor', 'Actor', 'Agent'),
+  Q('Words', 'What is the opposite of “generous”?', 'Stingy', 'Kind', 'Wealthy', 'Careful'),
+  Q('Words', 'Which of these words is a verb?', 'Jump', 'Blue', 'Quickly', 'Happiness'),
+  Q('Words', '“Bonjour” means hello in which language?', 'French', 'Italian', 'Spanish', 'Portuguese'),
+  Q('Words', 'Words that sound alike but mean different things are called what?', 'Homophones', 'Synonyms', 'Antonyms', 'Acronyms'),
+  Q('Words', '“Hola” means hello in which language?', 'Spanish', 'French', 'German', 'Greek'),
+  Q('Words', 'What is the dot over a lowercase “i” called?', 'A tittle', 'A jot', 'A speck', 'A serif'),
+
+  // ---------------- NUMBERS ----------------
+  Q('Numbers', 'What is 7 × 8?', '56', '54', '64', '48'),
+  Q('Numbers', 'How many sides does a hexagon have?', 'Six', 'Five', 'Seven', 'Eight'),
+  Q('Numbers', 'What is half of 90?', '45', '40', '35', '55'),
+  Q('Numbers', 'The angles of a triangle add up to how many degrees?', '180', '90', '360', '270'),
+  Q('Numbers', 'Which of these numbers is prime?', '7', '4', '6', '9'),
+  Q('Numbers', 'What is 12 squared?', '144', '124', '112', '154'),
+  Q('Numbers', 'How many minutes are in an hour and a half?', '90', '80', '100', '110'),
+  Q('Numbers', 'What is 25% of 200?', '50', '25', '75', '40'),
+  Q('Numbers', 'What number does the Roman numeral X represent?', '10', '5', '50', '100'),
+  Q('Numbers', 'How many sides does an octagon have?', 'Eight', 'Six', 'Seven', 'Ten'),
+  Q('Numbers', 'What is 100 divided by 4?', '25', '20', '30', '40'),
+  Q('Numbers', 'Which shape has no corners?', 'Circle', 'Square', 'Triangle', 'Hexagon'),
+
+  // ---------------- GENERAL ----------------
+  Q('General', 'How many days are in a leap year?', '366', '365', '364', '367'),
+  Q('General', 'Red, yellow and which color are the primary paint colors?', 'Blue', 'Green', 'Purple', 'Orange'),
+  Q('General', 'How many colors are in a rainbow?', 'Seven', 'Five', 'Six', 'Eight'),
+  Q('General', 'Which month can have 29 days?', 'February', 'April', 'June', 'November'),
+  Q('General', 'How many hours are in a day?', '24', '12', '36', '48'),
+  Q('General', 'Which direction does a compass needle point?', 'North', 'South', 'East', 'West'),
+  Q('General', 'What is frozen water called?', 'Ice', 'Steam', 'Frost dust', 'Snowmelt'),
+  Q('General', 'How many sides does a stop sign have?', 'Eight', 'Six', 'Five', 'Ten'),
+  Q('General', 'Which gas makes party balloons float?', 'Helium', 'Oxygen', 'Hydrogen', 'Nitrogen'),
+  Q('General', 'How many years are in a century?', '100', '10', '50', '1000'),
+  Q('General', 'What device measures earthquakes?', 'A seismograph', 'A barometer', 'A telescope', 'A sundial'),
+  Q('General', 'What do you call a house made of ice blocks?', 'An igloo', 'A yurt', 'A cabin', 'A teepee'),
+];
+
+// --- integrity check: fail fast if the bank is malformed ---
+(function validate() {
+  const seen = new Set();
+  for (const q of QUESTIONS) {
+    if (!q.text || !q.correct || !Array.isArray(q.wrong) || q.wrong.length !== 3) {
+      throw new Error('Malformed question: ' + JSON.stringify(q));
+    }
+    const opts = [q.correct, ...q.wrong];
+    if (new Set(opts.map(o => o.toLowerCase())).size !== 4) {
+      throw new Error('Duplicate options in: ' + q.text);
+    }
+    if (seen.has(q.text.toLowerCase())) throw new Error('Duplicate question: ' + q.text);
+    seen.add(q.text.toLowerCase());
+  }
+})();
+
+module.exports = QUESTIONS;

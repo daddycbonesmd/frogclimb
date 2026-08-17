@@ -1,0 +1,13 @@
+{
+  "name": "frogclimb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frog trivia tower climb - multiplayer",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/bots.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
