@@ -17,9 +17,9 @@ const Renderer = (() => {
     '##1##2##3##4#',
     '#...........#',
     'W...........W',
-    '#..C.....C..#',
+    '#...........#',
     'W...........W',
-    '#....C.C....#',
+    '#...........#',
     'W...........W',
     '#...........#',
     '#...........#',
@@ -38,6 +38,7 @@ const Renderer = (() => {
   let myFloor = 0, phase = 'idle', winners = [];
 
   const cam = { x: SPAWN.x, y: SPAWN.y, dir: SPAWN.dir };
+  let pitch = 0; // look up/down: shifts the horizon (y-shear)
   let bobT = 0, moving = false, locked = false;
 
   let chosen = null;          // option idx I walked into
@@ -160,7 +161,11 @@ const Renderer = (() => {
       if (!locked && !spectatorBlocked()) cv.requestPointerLock({ unadjustedMovement: true }).catch?.(() => cv.requestPointerLock());
     });
     document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === cv; });
-    document.addEventListener('mousemove', e => { if (locked) cam.dir += e.movementX * MOUSE_SENS; });
+    document.addEventListener('mousemove', e => {
+      if (!locked) return;
+      cam.dir += e.movementX * MOUSE_SENS;
+      pitch = clamp(pitch - e.movementY * 0.4, -55, 55);
+    });
 
     requestAnimationFrame(frame);
   }
@@ -185,15 +190,19 @@ const Renderer = (() => {
     syncGhosts();
   }
 
+  // everyone shares the same room, whatever their floor — the race is visible
   function syncGhosts() {
     const seen = new Set();
     let s = 0;
     for (const p of roster) {
-      if (p.id === selfId || p.spectator || p.floor !== myFloor) continue;
+      if (p.id === selfId || p.spectator || !p.connected) continue;
       seen.add(p.id);
-      if (!ghosts.has(p.id)) {
+      const g = ghosts.get(p.id);
+      if (g) {
+        g.name = p.name; g.floor = p.floor; g.color = p.color;
+      } else {
         ghosts.set(p.id, {
-          color: p.color,
+          color: p.color, name: p.name, floor: p.floor,
           x: 3.5 + (s % 4) * 2.0, y: 5.6 + (s % 2) * 1.2,
           tx: 3.5 + (s % 4) * 2.0, ty: 5.6 + (s % 2) * 1.2,
           state: 'idle', t0: now(), door: null,
@@ -213,6 +222,7 @@ const Renderer = (() => {
 
   function matchStart() {
     winners = []; phase = 'idle'; myFloor = 0; pending = null; redVignette = 0;
+    pitch = 0;
     resetRoom();
   }
 
@@ -327,7 +337,7 @@ const Renderer = (() => {
       let wallX = side === 0 ? cam.y + dist * rdy : cam.x + dist * rdx;
       wallX -= wallX | 0;
       const lineH = Math.min(H * 3, (H / dist) | 0);
-      const y0 = (HALF - lineH / 2 + bobY) | 0;
+      const y0 = (HALF + pitch - lineH / 2 + bobY) | 0;
 
       let texture = wallTex;
       if (cell === 'W') texture = winTex;
@@ -353,19 +363,22 @@ const Renderer = (() => {
     const invDet = 1 / (plX * dirY - dirX * plY);
     const tx = invDet * (dirY * rx - dirX * ry);
     const ty = invDet * (-plY * rx + plX * ry);
-    if (ty <= 0.15) return;
+    if (ty <= 0.15) return null;
     const sx = ((W / 2) * (1 + tx / ty)) | 0;
     const hgt = Math.abs((H / ty) | 0) * hScale;
     const wdt = hgt * (img.width / img.height);
-    const y0 = (HALF + (H / ty) * 0.5 - hgt + bobY - (yLift || 0) * (H / ty)) | 0;
+    const y0 = (HALF + pitch + (H / ty) * 0.5 - hgt + bobY - (yLift || 0) * (H / ty)) | 0;
     const xs = (sx - wdt / 2) | 0;
     ctx.globalAlpha = alpha;
+    let visible = false;
     for (let s = 0; s < wdt; s++) {
       const col = xs + s;
       if (col < 0 || col >= W || zbuf[col] <= ty) continue;
       ctx.drawImage(img, (s / wdt * img.width) | 0, 0, 1, img.height, col, y0, 1, hgt);
+      visible = true;
     }
     ctx.globalAlpha = 1;
+    return visible ? { sx, y0, hgt, ty } : null;
   }
 
   function drawGhosts(t, zbuf, bobY) {
@@ -389,7 +402,19 @@ const Renderer = (() => {
         g.x += Math.sin(t / 900 + g.color * 2) * 0.002;
         lift = Math.abs(Math.sin(t / 400 + g.color)) * 0.02;
       }
-      drawBillboard(backSprites[g.color % backSprites.length], g.x, g.y, zbuf, bobY, hs, alpha, lift);
+      const hit = drawBillboard(backSprites[g.color % backSprites.length], g.x, g.y, zbuf, bobY, hs, alpha, lift);
+      // score floating above their head
+      if (hit && hit.ty < 9 && g.state !== 'falling') {
+        const tag = `${g.name.slice(0, 6).toUpperCase()} F${g.floor}`;
+        const tw = tinyTextWidth(tag, 1);
+        const lx = clamp(hit.sx - tw / 2, 1, W - tw - 1) | 0;
+        const ly = clamp(hit.y0 - 9, 2, H - 8) | 0;
+        ctx.globalAlpha = Math.min(1, alpha + 0.15);
+        ctx.fillStyle = 'rgba(13,13,16,.75)';
+        ctx.fillRect(lx - 2, ly - 1, tw + 4, 8);
+        drawTinyText(ctx, tag, lx, ly, FROG_COLORS[g.color % FROG_COLORS.length].body, 1);
+        ctx.globalAlpha = 1;
+      }
     }
   }
 
@@ -615,12 +640,13 @@ const Renderer = (() => {
     } else {
       const sh = shake ? (Math.random() - 0.5) * shake : 0;
       const bobY = (moving ? Math.abs(Math.sin(bobT * 9)) * -3 : 0) + sh;
+      const horizon = HALF + pitch + bobY;
       // ceiling: cold dark office air
-      ctx.fillStyle = '#1c1c22'; ctx.fillRect(0, 0, W, HALF + bobY);
-      ctx.fillStyle = '#14141a'; ctx.fillRect(0, 0, W, (HALF + bobY) * 0.45);
+      ctx.fillStyle = '#1c1c22'; ctx.fillRect(0, 0, W, horizon);
+      ctx.fillStyle = '#14141a'; ctx.fillRect(0, 0, W, horizon * 0.45);
       // floor: charcoal with a blood-red wash near your feet
-      ctx.fillStyle = '#26262b'; ctx.fillRect(0, HALF + bobY, W, H);
-      ctx.fillStyle = '#2e2228'; ctx.fillRect(0, H - 40 + bobY * 0.4, W, 40);
+      ctx.fillStyle = '#26262b'; ctx.fillRect(0, horizon, W, H);
+      ctx.fillStyle = '#2e2228'; ctx.fillRect(0, H - Math.max(10, 40 - pitch * 0.5), W, 60);
       const zbuf = castWalls(t, bobY);
       drawGhosts(t, zbuf, bobY);
       drawKick(t);
@@ -650,7 +676,7 @@ const Renderer = (() => {
     setWinners, markAnswered, clearAnswered, setChosen,
     input,
     set onChoose(cb) { onChoose = cb; },
-    _debug: () => ({ x: cam.x, y: cam.y, dir: cam.dir, chosen, openDoor, myFloor, locked, phase }),
+    _debug: () => ({ x: cam.x, y: cam.y, dir: cam.dir, pitch, chosen, openDoor, myFloor, locked, phase, ghostCount: ghosts.size }),
     _step: dt => update(dt), // test hook: advance simulation without rAF
     _isTransition: () => !!transition, _isKick: () => !!kick,
   };
