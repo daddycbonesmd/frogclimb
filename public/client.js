@@ -401,26 +401,11 @@
   els.leaveBtn.onclick = leave;
   els.overlayLeaveBtn.onclick = () => { els.overlay.classList.add('hidden'); leave(); };
 
-  // FPS controls: WASD walk, arrows turn/walk, mouse looks (pointer lock in renderer)
-  const KEYMAP = {
-    KeyW: 'fwd', ArrowUp: 'fwd',
-    KeyS: 'back', ArrowDown: 'back',
-    KeyA: 'left', KeyD: 'right',
-    ArrowLeft: 'turnL', ArrowRight: 'turnR',
-  };
-  function setKey(e, down) {
+  document.addEventListener('keydown', e => {
     if (els.game.classList.contains('hidden')) return;
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-    if (down && e.key >= '1' && e.key <= '4') { pick(e.key.charCodeAt(0) - 49); return; }
-    const slot = KEYMAP[e.code];
-    if (slot) { e.preventDefault(); Renderer.input[slot] = down; }
-  }
-  document.addEventListener('keydown', e => setKey(e, true));
-  document.addEventListener('keyup', e => setKey(e, false));
-  window.addEventListener('blur', () => { for (const k of Object.keys(Renderer.input)) Renderer.input[k] = false; });
-
-  // walking into a door answers the question
-  Renderer.onChoose = idx => pick(idx);
+    if (e.key >= '1' && e.key <= '4') pick(e.key.charCodeAt(0) - 49);
+  });
 
   // difficulty buttons (host only)
   [...document.querySelectorAll('.diffBtn')].forEach(b => {
